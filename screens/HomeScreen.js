@@ -1,38 +1,58 @@
-import React, { useEffect, useState, useContext } from 'react';
-import { View, FlatList, Text, Button } from 'react-native';
-import PostForm from '../components/Posts/PostForm';
-import { AuthContext } from '../context/auth-context';
-import { API_URL } from '../constants/constants';
+import React, { useState, useEffect } from 'react';
+import { View, Text, FlatList, StyleSheet } from 'react-native';
+import { getPosts } from '../utils/postStorage';
 
 export default function HomeScreen() {
   const [posts, setPosts] = useState([]);
-  const { logout } = useContext(AuthContext);
 
   const loadPosts = async () => {
-    const res = await fetch(`${API_URL}/api/posts`);
-    const data = await res.json();
-    setPosts(data.reverse()); // neueste zuerst
+    const all = await getPosts();
+    const sorted = all.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    setPosts(sorted);
   };
 
   useEffect(() => {
-    loadPosts();
+    const unsubscribe = loadPosts();
+    return () => unsubscribe;
   }, []);
 
   return (
     <View style={{ flex: 1 }}>
-      <PostForm category="all" onPostCreated={loadPosts} />
       <FlatList
         data={posts}
-        keyExtractor={(item, idx) => idx.toString()}
+        keyExtractor={(_, i) => i.toString()}
         renderItem={({ item }) => (
-          <View style={{ padding: 12, borderBottomWidth: 1 }}>
-            <Text style={{ fontWeight: 'bold' }}>{item.title}</Text>
+          <View style={styles.post}>
+            <Text style={styles.title}>{item.title}</Text>
             <Text>{item.text}</Text>
-            <Text style={{ fontStyle: 'italic', color: 'gray' }}>{item.user} – {new Date(item.createdAt).toLocaleString()}</Text>
+            <Text style={styles.meta}>
+              {item.category} • {new Date(item.createdAt).toLocaleString()}
+            </Text>
           </View>
         )}
+        ListEmptyComponent={
+          <View style={{ padding: 20 }}>
+            <Text>No posts yet 😅</Text>
+          </View>
+        }
       />
-      <Button title="Logout" onPress={logout} />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  post: {
+    padding: 15,
+    borderBottomWidth: 1,
+    borderColor: '#ddd',
+  },
+  title: {
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+  meta: {
+    fontSize: 12,
+    color: 'gray',
+    marginTop: 5,
+  },
+});

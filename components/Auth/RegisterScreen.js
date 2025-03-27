@@ -1,3 +1,4 @@
+/*
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
 import { API_URL } from '../../constants/constants';
@@ -47,3 +48,4 @@ const styles = StyleSheet.create({
   input: { borderWidth: 1, padding: 10, marginBottom: 12, borderRadius: 5 },
   link: { marginTop: 20, textAlign: 'center', color: 'blue' },
 });
+*/

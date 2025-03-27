@@ -1,3 +1,4 @@
+/*
 import React, { useState, useContext } from 'react';
 import { View, Text, TextInput, Button, Alert, StyleSheet } from 'react-native';
 import { AuthContext } from '../../context/auth-context';
@@ -66,3 +67,4 @@ const styles = StyleSheet.create({
   input: { borderWidth: 1, padding: 10, marginBottom: 12, borderRadius: 5 },
   link: { marginTop: 20, textAlign: 'center', color: 'blue' },
 });
+*/
