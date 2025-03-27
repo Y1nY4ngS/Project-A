@@ -1,19 +1,43 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, StyleSheet } from 'react-native';
 import { getPosts } from '../utils/postStorage';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function HomeScreen() {
   const [posts, setPosts] = useState([]);
 
+  const seedPosts = async () => {
+    const existing = await getPosts();
+    if (existing.length === 0) {
+      const dummyPosts = [
+        {
+          title: '🚀 Erstes Team gesucht',
+          text: 'Hey, ich suche ein starkes Valorant-Team!',
+          category: 'team',
+          user: 'testuser',
+          createdAt: new Date().toISOString(),
+        },
+        {
+          title: '🏆 Spieler gesucht',
+          text: 'Wir suchen einen Midlaner für Clash!',
+          category: 'player',
+          user: 'captainX',
+          createdAt: new Date().toISOString(),
+        },
+      ];
+      await AsyncStorage.setItem('posts', JSON.stringify(dummyPosts));
+    }
+  };
+
   const loadPosts = async () => {
+    await seedPosts(); // <––– wichtig!
     const all = await getPosts();
     const sorted = all.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     setPosts(sorted);
   };
 
   useEffect(() => {
-    const unsubscribe = loadPosts();
-    return () => unsubscribe;
+    loadPosts();
   }, []);
 
   return (
